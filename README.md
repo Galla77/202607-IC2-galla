@@ -1,14 +1,42 @@
-# Sistema de Monitoreo Ambiental - IC 2
+# Sistema de Monitoreo Ambiental basado en IoT
 
-Este proyecto implementa una arquitectura de Internet de las Cosas (IoT) con comunicación bidireccional en tiempo real. Permite la adquisición de datos ambientales (temperatura y humedad) mediante un nodo sensor y el control a distancia de un actuador (LED), centralizando el tráfico de datos a través de un Broker MQTT y una interfaz gráfica de usuario.
+**Alumno:** Marcos Galla
+**Materia:** Ingeniería en Computación II
 
-##  Arquitectura del Sistema
+## Estructura del Directorio
+* `Codigo_esp32/`: Contiene el código fuente en MicroPython para el nodo ESP32, encargado de la lectura del sensor DHT11 y el control del actuador (LED).
+* `mosquitto/`: Contiene el archivo de configuración del broker MQTT (`mosquitto.conf`), el cual establece las políticas de conexión y persistencia.
+* `node_red/`: Contiene el archivo `flows.json` con la exportación del flujo de Node-RED, donde se define la lógica de enrutamiento y la interfaz gráfica del dashboard.
+* `simulador.py`: Script en Python desarrollado para emitir telemetría simulada (temperatura y humedad) con el objetivo de probar el sistema sin necesidad del hardware físico.
+* `informe_ICII_Marcos_Galla.pdf`: Documento formal del proyecto que incluye requerimientos, decisiones de arquitectura, diagramas de flujo y resultados de pruebas.
 
-El ecosistema está compuesto por tres capas principales:
+## Tópicos MQTT y Especificación
+* **Autenticación:** El broker se ejecuta en modo anónimo (sin usuario/contraseña), permitiendo conexiones locales sin requerir credenciales.
 
-1. **Nodo de Borde (ESP32):** Recolecta datos del sensor DHT11 y controla el estado físico del LED. Está programado en MicroPython.
-2. **Capa de Mensajería (Mosquitto MQTT):** Servidor Broker corriendo en un contenedor Docker dentro de una Raspberry Pi 4 model B, encargado de distribuir los mensajes de forma asríncronica mediante tópicos configurados.
-3. **Capa de Aplicación y Visualización (Node-RED):** dirige la lógica de control, procesa los datos entrantes y expone un Dashboard web con gráficos en tiempo real de temperatura y humedad e interruptores de control para el estado del LED.
+### Tópicos Utilizados
+* `esp32/dht11/temperature`
+  * **Publica:** Nodo ESP32 (o script simulador)
+  * **Suscribe:** Node-RED
+  * **Formato de datos:** Cadena de texto (String) representando el valor numérico en °C (Ej: "24.5").
 
+* `esp32/dht11/humidity`
+  * **Publica:** Nodo ESP32 (o script simulador)
+  * **Suscribe:** Node-RED
+  * **Formato de datos:** Cadena de texto (String) representando el porcentaje de humedad (Ej: "55.0").
+
+* `esp32/led/status`
+  * **Publica:** Nodo ESP32 (confirmando el cambio físico)
+  * **Suscribe:** Node-RED (para actualizar el estado en el dashboard)
+  * **Formato de datos:** String ("ON" / "OFF").
+
+* `esp32/led/control`
+  * **Publica:** Node-RED (al accionar el switch en el dashboard)
+  * **Suscribe:** Nodo ESP32 (para ejecutar la acción)
+  * **Formato de datos:** String ("ON" / "OFF").
+
+## Pasos para el Despliegue (Ejecución Limpia)
+1. **Clonar repositorio:**
+   ```bash
+   git clone [https://github.com/Galla77/202607-IC2-galla.git](https://github.com/Galla77/202607-IC2-galla.git)
 
  [ ESP32 (DHT11/LED) ] <---(WiFi / MQTT)---> [ Broker Mosquitto (Docker) ] <---> [ Node-RED Dashboard ]
