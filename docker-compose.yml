@@ -1,9 +1,9 @@
 version: '3.8'
-
 services:
+
   # Servicio del Broker MQTT
   mosquitto:
-    image: eclipse-mosquitto:latest
+    image: eclipse-mosquitto:2.0.18 # Versión fijada, prohibido usar latest
     container_name: mqtt_broker
     ports:
       - "1883:1883"
@@ -16,12 +16,13 @@ services:
 
   # Servicio de Node-RED
   nodered:
-    image: nodered/node-red:latest
+    image: nodered/node-red:3.1.0 # Versión fijada, prohibido usar latest
     container_name: nodered_container
     ports:
       - "1880:1880"
     volumes:
       - nodered_data:/data
+      - ./node_red/flows.json:/data/flows.json # Montaje explícito del flujo exigido
     environment:
       - TZ=America/Argentina/Buenos_Aires
     depends_on:

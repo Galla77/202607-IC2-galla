@@ -37,18 +37,18 @@ sensor = dht.DHT11(machine.Pin(DHT_PIN))
 # =========================
 intervalo = 3000
 last_read = 0
-client = None  # Definición inicial del objeto cliente
+client = None  
 
 # =========================
 # WIFI
 # =========================
 def conectar_wifi():
+    # [REF-1] INICIO: Conexión a la red Wi-Fi local
     wlan = network.WLAN(network.STA_IF)
     wlan.active(True)
     if not wlan.isconnected():
         print("Buscando red Wi-Fi...")
         wlan.connect(WIFI_SSID, WIFI_PASS)
-        # Esperar hasta 10 segundos a que conecte
         intentos = 0
         while not wlan.isconnected() and intentos < 10:
             print("Conectando al Wi-Fi... Segundo", intentos)
@@ -57,7 +57,6 @@ def conectar_wifi():
             
     if wlan.isconnected():
         print("\n[Wi-Fi OK] Conectado con éxito a la red.")
-        print("Datos de red (IP, Máscara, Gateway, DNS):", wlan.ifconfig())
     else:
         print("\n[Wi-Fi FALLÓ] No se pudo conectar. Revisá los datos.")
         raise Exception("Error de conexión Wi-Fi")
@@ -66,20 +65,21 @@ def conectar_wifi():
 # CALLBACK MQTT
 # =========================
 def callback(topic, msg):
-    global client  # Indicar que usamos el cliente global
+    # [REF-3] RECEPCIÓN: El ESP32 recibe un comando desde el Broker MQTT
+    global client  
     
     topic = topic.decode()
     msg = msg.decode()
-    
     print("Mensaje recibido:", topic, msg)
         
-    
     if topic == TOPIC_LED_CONTROL:
         if msg == "ON":
+            # [REF-4] ACTUACIÓN: Cambio de estado físico del hardware (LED) y confirmación de estado
             led.value(1)
             client.publish(TOPIC_LED_STATUS, "ON")
             print("LED ON")
         elif msg == "OFF":
+            # [REF-4] ACTUACIÓN: Cambio de estado físico del hardware (LED) y confirmación de estado
             led.value(0)
             client.publish(TOPIC_LED_STATUS, "OFF")
             print("LED OFF")
@@ -88,6 +88,7 @@ def callback(topic, msg):
 # MQTT
 # =========================
 def conectar_mqtt():
+    # [REF-2] SUSCRIPCIÓN: Conexión al broker y suscripción a tópicos de control
     global client
     try:
         print("Conectando al bróker MQTT...")
@@ -96,7 +97,6 @@ def conectar_mqtt():
         client.connect()
         client.subscribe(TOPIC_LED_CONTROL)
         
-        # Avisar que el ESP32 está online
         client.publish(TOPIC_STATUS, "ONLINE")
         print("MQTT conectado")
         return True
@@ -115,7 +115,6 @@ conectar_mqtt()
 # =========================
 while True:
     try:
-        # Verificar estado de conexión antes de operar
         wifi = network.WLAN(network.STA_IF)
         if not wifi.isconnected():
             print("[ALERTA] WiFi caído. Reconectando...")
@@ -132,7 +131,7 @@ while True:
         # Procesar mensajes entrantes del Broker
         client.check_msg()
         
-        # Manejo de tiempo no bloqueante para el DHT11
+        # [REF-5] ADQUISICIÓN: Lectura no bloqueante del sensor DHT11
         now = time.ticks_ms()
         if time.ticks_diff(now, last_read) > intervalo:
             try:
@@ -142,7 +141,7 @@ while True:
                 
                 print("Temp:", temp, "°C | Hum:", hum, "%")
                 
-                # Publicar lecturas
+                # [REF-6] PUBLICACIÓN: Envío de telemetría hacia el Broker MQTT
                 client.publish(TOPIC_TEMP, str(temp))
                 client.publish(TOPIC_HUM, str(hum))
                 client.publish(TOPIC_STATUS, "ONLINE")
@@ -154,7 +153,6 @@ while True:
 
     except Exception as e:
         print("Error en el lazo principal:", e)
-        # Si el error es por desconexión de MQTT, forzamos reinicio de cliente
         client = None 
         time.sleep(2)
         
