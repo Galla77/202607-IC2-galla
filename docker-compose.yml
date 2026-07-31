@@ -24,14 +24,12 @@ services:
       - "1880:1880"
     volumes:
 
-      - nodered_data:/data
-      - ./node_red/flows.json:/data/flows.json # Montaje explícito del flujo exigido
-
       - ./node_red:/data          # <-- CAMBIO CLAVE: apunta a tu carpeta local del repo
 
     environment:
       - TZ=America/Argentina/Buenos_Aires
-      - FLOWS=flows.json          # <-- OBLIGA a usar tu archivo original
+      - FLOWS=flows.json   
+    entrypoint: bash -c "npm install --prefix /data && ./entrypoint.sh"    
     depends_on:
       - mosquitto
     restart: unless-stopped
