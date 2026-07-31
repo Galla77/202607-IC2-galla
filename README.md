@@ -33,10 +33,31 @@
   * **Publica:** Node-RED (al accionar el switch en el dashboard)
   * **Suscribe:** Nodo ESP32 (para ejecutar la acción)
   * **Formato de datos:** String ("ON" / "OFF").
+ 
+🚀 Guía de Despliegue y Verificación
+Requisitos Previos
+Tener instalado Docker y Docker Compose.
+Tener instalado Python 3 con la librería paho-mqtt:
+pip install paho-mqtt
 
-## Pasos para el Despliegue (Ejecución Limpia)
-1. **Clonar repositorio:**
-   ```bash
-   git clone [https://github.com/Galla77/202607-IC2-galla.git](https://github.com/Galla77/202607-IC2-galla.git)
+⚡ Ejecución Rápida (TL;DR)
+Si querés probar el proyecto inmediatamente en un clon limpio, ejecutá en tu terminal:
 
- [ ESP32 (DHT11/LED) ] <---(WiFi / MQTT)---> [ Broker Mosquitto (Docker) ] <---> [ Node-RED Dashboard ]
+# 1. Clonar e ingresar al proyecto
+git clone https://github.com/Facundo-Boide/202607-IC2-galla
+cd 202607-IC2-galla
+
+# 2. Levantar la infraestructura (Broker MQTT + Node-RED)
+docker compose up -d
+
+# 3. Ejecutar el simulador del ESP32
+python simulador.py ( En consola apareceran los datos enviados y datos recibidos )
+
+Ctrl+C para detener scrip
+
+#4. El Dashboard y Node-Red
+Dashboard "Localhost:1880/ui"
+Node-Red "Localhost:1880"
+
+#5. detener y limpiar entorno
+Broker-Node-red docker compose down
