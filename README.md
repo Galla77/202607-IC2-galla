@@ -44,7 +44,7 @@ pip install paho-mqtt
 Si querés probar el proyecto inmediatamente en un clon limpio, ejecutá en tu terminal:
 
 # 1. Clonar e ingresar al proyecto
-git clone https://github.com/Facundo-Boide/202607-IC2-galla
+git clone https://github.com/Galla77/202607-IC2-galla
 cd 202607-IC2-galla
 
 # 2. Levantar la infraestructura (Broker MQTT + Node-RED)
