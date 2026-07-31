@@ -4,6 +4,7 @@ services:
   # Servicio del Broker MQTT
   mosquitto:
     image: eclipse-mosquitto:2.0.18 # Versión fijada, prohibido usar latest
+
     container_name: mqtt_broker
     ports:
       - "1883:1883"
@@ -14,17 +15,23 @@ services:
       - mosquitto_log:/mosquitto/log
     restart: unless-stopped
 
-  # Servicio de Node-RED
+# Servicio de Node-RED
   nodered:
-    image: nodered/node-red:3.1.0 # Versión fijada, prohibido usar latest
+
+    image: nodered/node-red:5.0.4
     container_name: nodered_container
     ports:
       - "1880:1880"
     volumes:
+
       - nodered_data:/data
       - ./node_red/flows.json:/data/flows.json # Montaje explícito del flujo exigido
+
+      - ./node_red:/data          # <-- CAMBIO CLAVE: apunta a tu carpeta local del repo
+
     environment:
       - TZ=America/Argentina/Buenos_Aires
+      - FLOWS=flows.json          # <-- OBLIGA a usar tu archivo original
     depends_on:
       - mosquitto
     restart: unless-stopped

@@ -1,0 +1,5 @@
+﻿node_red/node_modules/
+node_red/.npm/
+node_red/.config.*
+node_red/*.backup
+node_red/flows_cred.json

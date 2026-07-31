@@ -154,6 +154,14 @@
         "className": ""
     },
     {
+        "id": "dbf880831418ed1b",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "node-red-dashboard": "3.6.6"
+        }
+    },
+    {
         "id": "bf3adda707142da2",
         "type": "mqtt in",
         "z": "7d1d94f59614f8dc",
@@ -281,7 +289,7 @@
         "outputs": 1,
         "useDifferentColor": false,
         "className": "",
-        "x": 950,
+        "x": 1030,
         "y": 260,
         "wires": [
             []
@@ -460,13 +468,5 @@
         "x": 500,
         "y": 160,
         "wires": []
-    },
-    {
-        "id": "dbf880831418ed1b",
-        "type": "global-config",
-        "env": [],
-        "modules": {
-            "node-red-dashboard": "3.6.6"
-        }
     }
 ]
